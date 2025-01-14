@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+  }
+  #input-form input {
+    padding: 10px;
+    margin: 5px 0;
+    width: 80%;
+  }
+  #output {
+    margin-top: 50px;
+  }
+  .block {
+    display: inline-block;
+    width: 20px;
+    margin: 2px;
+    position: relative;
+  }
+  .block .height {
+    background-color: #333;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+  }
+  .block .water {
+    background-color: #f5c469;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+  }
