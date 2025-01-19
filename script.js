@@ -47,16 +47,30 @@ function calculateWaterStored(heights) {
 
 function renderBlocks(heights) {
     const maxHeight = Math.max(...heights);
-    let html = '<div style="display: flex; justify-content: center; align-items: flex-end;">';
+    let html = '<div style="display: flex; justify-content: center; align-items: flex-end; gap: 0;">';
 
     heights.forEach((height, index) => {
         const waterHeight = Math.max(0, Math.min(leftMax(heights, index), rightMax(heights, index)) - height);
+
         html += `
-        <div class="block" style="border: 1px solid black; height: ${maxHeight * 20}px; display: flex; flex-direction: column-reverse; align-items: center;">
-          <div class="height" style="height: ${height * 20}px; background-color: #8B4513; width: 20px;"></div>
-          <div class="water" style="height: ${waterHeight * 20}px; background-color: #3498db; width: 20px;"></div>
-        </div>
-      `;
+        <div class="block" style="border: 1px solid black; height: ${maxHeight * 20}px; display: flex; flex-direction: column-reverse;">
+        ${waterHeight < height ?
+                `<div style="display:flex; flex-direction: column-reverse; height: ${maxHeight * 20}px; gap: 0px;">
+                    ${Array.from({ length: height }).map(() => `
+                    <div class="water" style="height: 19px; background-color:rgb(99, 24, 11); border-top: 1px solid black; width: 20px;"></div>
+                    `).join('')
+                }
+                </div>`
+                :
+                `<div style="display:flex; flex-direction: column-reverse; height: ${maxHeight * 20}px; gap: 0px;">
+                ${Array.from({ length: waterHeight }).map(() => `
+                    <div class="water" style="height: 19px; background-color: #3498db; border-top: 1px solid black; width: 20px;"></div>
+                    `).join('')
+                }
+                </div>`
+            }  
+        </div >
+        `;
     });
 
     html += "</div>";
