@@ -1,43 +1,86 @@
-function maxProfit() {
+document.getElementById("input-form").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-    function maximumProfit(n) {
-        let earningsPerUnit = [1500, 1000, 3000];
-        let units = [5, 4, 10];
+    const heightsInput = document.getElementById("heights").value;
+    const heights = heightsInput.split(",").map(Number);
+    const outputDiv = document.getElementById("output");
 
-        let minUnit = Math.min(...units)
-        let totalEarningArray = [];
-
-        let tempResult = units.map((value, index) => {
-            let input = n;
-            let earnings = 0;
-            let tempArray = [];
-            while (input >= minUnit) {
-                input -= value;
-                if (input >= 0) {
-                    earnings += input * earningsPerUnit[index];
-                    tempArray.push(earnings);
-                }
-            }
-            totalEarningArray.push(earnings);
-            return tempArray;
-        });
-
-        let maxEarning = Math.max(...totalEarningArray);
-
-        let totalOutputArray = totalEarningArray.map((value, index) =>
-            maxEarning === value ? tempResult[index].length : 0);
-
-        let output = totalOutputArray.map((value, index) =>
-            value !== 0 ?
-                `${index + 1}. T: ${index === 0 ? value : 0} P: ${index === 1 ? value : 0} C: ${index === 2 ? value : 0} <br />`
-                : ""
-        ).join("");
-
-        document.getElementById("timeunit").innerHTML = `Time Unit: ${n}`;
-        document.getElementById("earnings").innerHTML = `Earnings: $${maxEarning}`;
-        document.getElementById("solution").innerHTML = `Solutions: <br />${output}`;
+    if (heights.some(isNaN)) {
+        outputDiv.innerHTML = "<p>Please enter valid numbers!</p>";
+        return;
     }
 
-    let unitsInput = Number(document.getElementById("unitInput").value);
-    maximumProfit(unitsInput);
+    const totalWater = calculateWaterStored(heights);
+
+    outputDiv.innerHTML = `
+        <h3>Total Water Stored: ${totalWater} units</h3>
+        <div style="padding: 12px 0px; border: 1px solid black; ">
+        ${renderBlocks(heights)}
+        </div>
+        `;
+});
+
+function calculateWaterStored(heights) {
+    const n = heights.length;
+    if (n === 0) return 0;
+
+    const leftMax = Array(n).fill(0);
+    const rightMax = Array(n).fill(0);
+    let totalWater = 0;
+
+    leftMax[0] = heights[0];
+    for (let i = 1; i < n; i++) {
+        leftMax[i] = Math.max(leftMax[i - 1], heights[i]);
+    }
+
+    rightMax[n - 1] = heights[n - 1];
+    for (let i = n - 2; i >= 0; i--) {
+        rightMax[i] = Math.max(rightMax[i + 1], heights[i]);
+    }
+
+    for (let i = 0; i < n; i++) {
+        totalWater += Math.max(0, Math.min(leftMax[i], rightMax[i]) - heights[i]);
+    }
+
+    return totalWater;
+}
+
+function renderBlocks(heights) {
+    const maxHeight = Math.max(...heights);
+    let html = '<div style="display: flex; justify-content: center; align-items: flex-end; gap: 0;">';
+
+    heights.forEach((height, index) => {
+        const waterHeight = Math.max(0, Math.min(leftMax(heights, index), rightMax(heights, index)) - height);
+            html += `
+            <div class="block" style="border: 1px solid black; height: ${maxHeight * 20}px; display: flex; flex-direction: column-reverse;">
+            ${Array.from({ length: height }).map(() => `
+                        <div class="water" style="height: 19px; background-color:rgb(151, 37, 16); border-top: 1px solid black; width: 20px;"></div>
+                        `).join('')
+                }
+            ${Array.from({ length: waterHeight }).map(() => `
+                        <div class="water" style="height: 19px; background-color: #3498db; border-top: 1px solid black; width: 20px;"></div>
+                        `).join('')
+                }
+            </div >
+            `;
+        });
+
+    html += "</div>";
+    return html;
+}
+
+function leftMax(heights, index) {
+    let max = 0;
+    for (let i = 0; i <= index; i++) {
+        max = Math.max(max, heights[i]);
+    }
+    return max;
+}
+
+function rightMax(heights, index) {
+    let max = 0;
+    for (let i = index; i < heights.length; i++) {
+        max = Math.max(max, heights[i]);
+    }
+    return max;
 }
