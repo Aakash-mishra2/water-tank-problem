@@ -20,13 +20,19 @@ document.getElementById("input-form").addEventListener("submit", function (e) {
         `;
 });
 
+
+const waterHeight = [];
+
 function calculateWaterStored(heights) {
     const n = heights.length;
-    if (n === 0) return 0;
 
+    if (n === 0) return 0;    
     const leftMax = Array(n).fill(0);
     const rightMax = Array(n).fill(0);
     let totalWater = 0;
+
+    Array(waterHeight).length = n;
+    waterHeight.fill(0);
 
     leftMax[0] = heights[0];
     for (let i = 1; i < n; i++) {
@@ -39,7 +45,8 @@ function calculateWaterStored(heights) {
     }
 
     for (let i = 0; i < n; i++) {
-        totalWater += Math.max(0, Math.min(leftMax[i], rightMax[i]) - heights[i]);
+        waterHeight[i] = Math.max(0, Math.min(leftMax[i], rightMax[i]) - heights[i]);
+        totalWater += waterHeight[i];
     }
 
     return totalWater;
@@ -50,20 +57,19 @@ function renderBlocks(heights) {
     let html = '<div style="display: flex; justify-content: center; align-items: flex-end; gap: 0;">';
 
     heights.forEach((height, index) => {
-        const waterHeight = Math.max(0, Math.min(leftMax(heights, index), rightMax(heights, index)) - height);
-            html += `
+        html += `
             <div class="block" style="border: 1px solid black; height: ${maxHeight * 20}px; display: flex; flex-direction: column-reverse;">
             ${Array.from({ length: height }).map(() => `
                         <div class="water" style="height: 19px; background-color:rgb(151, 37, 16); border-top: 1px solid black; width: 20px;"></div>
                         `).join('')
                 }
-            ${Array.from({ length: waterHeight }).map(() => `
+            ${Array.from({ length: waterHeight[index] }).map(() => `
                         <div class="water" style="height: 19px; background-color: #3498db; border-top: 1px solid black; width: 20px;"></div>
                         `).join('')
                 }
             </div >
             `;
-        });
+    });
 
     html += "</div>";
     return html;
